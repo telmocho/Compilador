@@ -1,0 +1,2 @@
+Primera linea\n
+Segunda linea
