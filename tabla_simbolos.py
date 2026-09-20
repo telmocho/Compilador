@@ -16,9 +16,12 @@ class TablaSimbolos:
             self.diccionario[identificador]["direccion_memoria"] = nueva_dir_mem
 
     def Exists(self, identificador):
-        if identificador in self.diccionario:
-            return True
-        else:
-            return False
+        return identificador in self.diccionario
 
-    def GetValue():
+    def GetValue(self, nombre_atributo, identificador):
+        """
+        Si ambos nombre_atributo e identificador existen, devuelve un valor; si no, None.
+        """
+        if self.Exists(identificador):
+            return self.diccionario[identificador].get(nombre_atributo)
+        return None
