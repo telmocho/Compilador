@@ -1,3 +1,17 @@
+class Nodo:
+    """
+    Esta clase representa un nodo (elto) que contiene un identificador y un diccionario de atributos.
+    """
+    def __init__ (self, identificador, atributos: dict):
+        self.identificador = identificador
+        self.atributos = atributos
+
+    def __lt__ (self, otro): # Un nodo es menor que otro si su identificador es menor.
+        return self.identificador < otro.identificador
+
+    def __str__ (self):
+        return f"Nodo {self.identificador}: {self.atributos}" 
+
 class Arbol:
     def __init__(self, elto):
         self.elto = elto
@@ -69,6 +83,54 @@ class Arbol:
             nivel = siguiente
 
         return "\n".join(resultado)
+
+    class NodeNotFoundError(Exception):
+        """
+        Esta excepción se dispara cuando ModifyAttr() no encuentra ningún nodo a partir 
+        del identificador
+        """
+        def __init__(self, identificador, msg="Nodo no encontrado"):
+            self.identificador = identificador
+            self.msg = msg
+            super().__init__(self.msg)
+
+        def __str__(self):
+            return f"{self.identificador} -> {self.msg}"
+    
+    def ModifyAttr(self, identificador, nombre_atributo, nuevo_valor):
+        # :: Si el parámetro identificador y el de la raiz actual coinciden, modificamos su atributo.
+        if self.elto.identificador == identificador:
+            self.elto.atributos[nombre_atributo] = nuevo_valor
+        # :: Si el identificador es menor que el de la raíz, bajamos por la izquierda.
+        elif identificador < self.elto.identificador:
+            if self.izdo is None:
+                raise self.NodeNotFoundError(identificador) # Si no hay subárbol izquierdo, lanzamos la excepción.
+            else:
+                self.izdo.ModifyAttr(identificador, nombre_atributo, nuevo_valor) # Si hay, seguimos buscando.
+        # :: Si el identificador es mayor que el de la raíz, bajamos por la derecha.
+        else: # El resto es igual que el caso anterior, pero por la derecha.
+            if self.dcho is None:
+                raise self.NodeNotFoundError(identificador)
+            else:
+                self.dcho.ModifyAttr(identificador, nombre_atributo, nuevo_valor)
+
+    def GetValue(self, identificador, nombre_atributo):
+        # :: Si el parámetro identificador y el de la raiz actual coinciden, devolvemos su atributo.
+        if self.elto.identificador == identificador:
+            return self.elto.atributos.get(nombre_atributo)
+        # :: Si el identificador es menor que el de la raíz, bajamos por la izquierda.
+        elif identificador < self.elto.identificador:
+            if self.izdo is None:
+                raise self.NodeNotFoundError(identificador) # Si no hay subárbol izquierdo, lanzamos la excepción.
+            else:
+                return self.izdo.GetValue(identificador, nombre_atributo) # Si hay, seguimos buscando.
+        # :: Si el identificador es mayor que el de la raíz, bajamos por la derecha.
+        else: # El resto es igual que el caso anterior, pero por la derecha.
+            if self.dcho is None:
+                raise self.NodeNotFoundError(identificador)
+            else:
+                return self.dcho.GetValue(identificador, nombre_atributo)
+
 
 # ==========================================
 # Main para probar la clase
